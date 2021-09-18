@@ -3,6 +3,7 @@
 
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
+#include "pthread.h"
 
 
 // simple mocked class
@@ -24,6 +25,18 @@ TEST(simpleTestSuite, simpleMockTest) {
 
     EXPECT_CALL(mockedFoo, GetSize()).Times(1);
     EXPECT_EQ(mockedFoo.GetSize(), 0);
+}
+
+
+void* pthread_start_routine(void*) {}
+
+TEST(simpleTestSuite, simplePthreadsTest) {
+    pthread_t thread;
+    void* retval;
+
+    EXPECT_EQ(pthread_create(&thread, NULL, &pthread_start_routine, NULL), 0);
+    EXPECT_EQ(pthread_join(thread, &retval), 0);
+    EXPECT_EQ(retval, NULL);
 }
 
 

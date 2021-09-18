@@ -5,21 +5,14 @@ cmake_minimum_required(VERSION 3.18)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(INSPECT_GTESTS VERSION 0001)
+project(INSPECT_GTESTS VERSION 0002)
 
 
 message(CHECK_START "Configuring Unit Tests")
 
-# Output with cmake option --log-level=DEBUG
-message(DEBUG "  DEBUG: googletest_SOURCE_DIR is: ${googletest_SOURCE_DIR}")
-message(DEBUG "  DEBUG: googletest_BINARY_DIR is: ${googletest_BINARY_DIR}")
-message(DEBUG "  DEBUG: pthreads4w_SOURCE_DIR is: ${pthreads4w_SOURCE_DIR}")
-message(DEBUG "  DEBUG: pthreads4w_BINARY_DIR is: ${pthreads4w_BINARY_DIR}")
-
 include_directories(
     ${googletest_SOURCE_DIR}/googletest/include/
     ${googletest_SOURCE_DIR}/googlemock/include/
-    ${pthreads4w_SOURCE_DIR}/pthreads4w/include/
     ${pthreads4w_SOURCE_DIR}/pthreads4w/include/
 )
 

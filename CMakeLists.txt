@@ -9,8 +9,12 @@ cmake_minimum_required(VERSION 3.18)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(GTEST_WITH_PT4W VERSION 0001)
+project(GTEST_WITH_PT4W VERSION 0002)
 
+
+#################################
+# General checks                #
+#################################
 
 if(NOT CMAKE_GENERATOR STREQUAL "NMake Makefiles")
     message(FATAL_ERROR "\nBuilding POSIX Threads for Windows is only supported using Generator \"NMake Makefiles\". To configure use option, for example:\ncmake -S . -B build -G \"NMake Makefiles\" -D BUILD_TESTING=OFF")
@@ -35,6 +39,10 @@ else()
     endif()
 endif()
 
+
+#################################
+# Install pthreads4w            #
+#################################
 message(CHECK_START "Download and configuring POSIX Threads for Windows")
 
 include(FetchContent)
@@ -55,7 +63,10 @@ message(DEBUG "  DEBUG: pthreads4w_BINARY_DIR is: ${pthreads4w_BINARY_DIR}")
 message(CHECK_PASS "done")
 
 
-message(CHECK_START "Download and configuring Googletest")
+#################################
+# Install GoogleTest            #
+#################################
+message(CHECK_START "Download and configuring GoogleTest")
 
 FetchContent_Declare(
     googletest
@@ -76,6 +87,11 @@ message(DEBUG "  DEBUG: googletest_SOURCE_DIR is: ${googletest_SOURCE_DIR}")
 message(DEBUG "  DEBUG: googletest_BINARY_DIR is: ${googletest_BINARY_DIR}")
 
 message(CHECK_PASS "done")
+
+
+#################################
+# Build Unit Tests              #
+#################################
 
 # The fetched content is made available by building the libraries in a
 # subproject using 'add_subdirectory()' (encapsulated in
