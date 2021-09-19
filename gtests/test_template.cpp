@@ -5,6 +5,11 @@
 #include "gmock/gmock.h"
 #include "pthread.h"
 
+#ifdef GTEST_IS_THREADSAFE
+#  pragma message ( "pthread is available" )
+#else
+#  pragma message ( "pthread is NOT available" )
+#endif
 
 // simple mocked class
 // -------------------
@@ -27,7 +32,7 @@ TEST(simpleTestSuite, simpleMockTest) {
     EXPECT_EQ(mockedFoo.GetSize(), 0);
 }
 
-
+/*
 void* pthread_start_routine(void*) {}
 
 TEST(simpleTestSuite, simplePthreadsTest) {
@@ -38,7 +43,7 @@ TEST(simpleTestSuite, simplePthreadsTest) {
     EXPECT_EQ(pthread_join(thread, &retval), 0);
     EXPECT_EQ(retval, NULL);
 }
-
+*/
 
 // main entry
 // ----------

@@ -13,7 +13,7 @@ project(GTEST_WITH_PT4W VERSION 0002)
 
 
 #################################
-# General checks                #
+# General checks and settings   #
 #################################
 
 if(NOT CMAKE_GENERATOR STREQUAL "NMake Makefiles")
@@ -39,13 +39,13 @@ else()
     endif()
 endif()
 
+include(FetchContent)
+
 
 #################################
 # Install pthreads4w            #
 #################################
 message(CHECK_START "Download and configuring POSIX Threads for Windows")
-
-include(FetchContent)
 
 FetchContent_Declare(
     pthreads4w
@@ -66,39 +66,19 @@ message(CHECK_PASS "done")
 #################################
 # Install GoogleTest            #
 #################################
-message(CHECK_START "Download and configuring GoogleTest")
-
-FetchContent_Declare(
-    googletest
-    GIT_REPOSITORY    https://github.com/google/googletest.git
-    GIT_TAG           origin/master
-    GIT_SHALLOW       ON
-)
-if(WIN32)
-    # reference: build/_deps/googletest-src/googletest/README.md
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-endif()
-
-# This caches googletest_SOURCE_DIR, googletest_BINARY_DIR and googletest_POPULATED.
-FetchContent_MakeAvailable(googletest)
-
-# Output with cmake option --log-level=DEBUG
-message(DEBUG "  DEBUG: googletest_SOURCE_DIR is: ${googletest_SOURCE_DIR}")
-message(DEBUG "  DEBUG: googletest_BINARY_DIR is: ${googletest_BINARY_DIR}")
-
-message(CHECK_PASS "done")
+# The fetched content is made available by building the libraries in a
+# subproject using 'add_subdirectory()' (encapsulated in
+# 'FetchContent_MakeAvailable()'). This is the reason why we cannot build
+# dependent projects direct here. These builds are executed before the build in
+# the subproject. Build of the dependent project will fail because the libraries
+# are not available yet. We have to use also a subproject for the dependent
+# project so we can control the order of the builds.
+#
+add_subdirectory(${PROJECT_SOURCE_DIR}/gtests/googletest ${PROJECT_SOURCE_DIR}/gtests/googletest/build)
 
 
 #################################
 # Build Unit Tests              #
 #################################
 
-# The fetched content is made available by building the libraries in a
-# subproject using 'add_subdirectory()' (encapsulated in
-# 'FetchContent_MakeAvailable()'). This is the reason why we cannot build the
-# gtests direct here. These builds are executed before the build in the
-# subproject. Build of the gtests will fail because the libraries are not
-# available yet. We have to use also a subproject for the gtests so we can
-# control the order of the builds.
-#
 add_subdirectory(${PROJECT_SOURCE_DIR}/gtests ${PROJECT_SOURCE_DIR}/gtests/build)
