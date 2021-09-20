@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.18)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(INSPECT_GTESTS VERSION 0003)
+project(INSPECT_GTESTS VERSION 0004)
 
 
 message(CHECK_START "Configuring Unit Tests")
@@ -16,7 +16,7 @@ FetchContent_GetProperties(googletest)
 include_directories(
     ${googletest_SOURCE_DIR}/googletest/include/
     ${googletest_SOURCE_DIR}/googlemock/include/
-    ${pthreads4w_SOURCE_DIR}/pthreads4w/include/
+    ${pthreads4w_SOURCE_DIR}/
 )
 
 # If linking with shared build gtest libs we need to tell it the compiler.

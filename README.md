@@ -30,4 +30,17 @@ To find the .dll files we have to append its directory to the Path environment v
     PS> .\gtests\build\test_template.exe
     PS> .\gtests\build\simple_pthread.exe
 
-Option -D GTEST_HAS_PTHREAD=1 is usually not needed if all environment variables are set.
+Option `-D GTEST_HAS_PTHREAD=1` is usually not needed if all environment variables are set.
+
+## Conclusion
+It seems GoogleTest with pthreads is quite buggy in particular on Microsoft Windows. Because I want cross platform compatibillity of the Unit Tests I decided to use GoogleTest without pthreads on all platforms. This is no problem on MS Windows because pthreads are not available there by default. GoogleTest compiles successful without pthread support on MS Windows. On Linux it is a problem to disable pthreads because GoogleTest finds it always from the standard operating system and connot be disabled. There is a flag `-D GTEST_HAS_PTHREAD=0` but it doesn't work as expected. See below. Lack of pthread support with GoogleTest does not affect pthreads on built programs. On the contrary, it enables mocking of pthread functions, which otherwise would crash with segfault. In particular I have found:
+
+### GTEST_HAS_PTHREAD does not work as expected
+### GoogleTest does not compile successful pthreads4w with Generator "NMake Makefiles"
+### GoogleTest does not find library of pthreads4w with Generator "Visual Studio *"
+### Preprocessor macro 'GTEST_IS_THREADSAFE' does not work
+
+<pre><sup>
+// Copyright (C) 2021 GPL 3 and higher by Ingo Höft,  &#60;Ingo&#64;Hoeft-online.de&#62;
+// Redistribution only with this Copyright remark. Last modified: 2021-09-19
+</sup></sup>
