@@ -1,5 +1,5 @@
 # Copyright (C) 2021 GPL 3 and higher by Ingo Höft,  <Ingo@Hoeft-online.de>
-# Redistribution only with this Copyright remark. Last modified: 2021-09-18
+# Redistribution only with this Copyright remark. Last modified: 2021-09-20
 
 # Test build with:
 # cmake -S . -B build -G "NMake Makefiles" --log-level=DEBUG -D BUILD_TESTING=OFF -D CMAKE_BUILD_TYPE=MinSizeRel -D BUILD_SHARED_LIBS=ON
@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION 3.18)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(GTEST_WITH_PT4W VERSION 0002)
+project(GTEST_WITH_PT4W VERSION 0003)
 
 
 #################################
@@ -53,14 +53,60 @@ FetchContent_Declare(
     GIT_TAG         origin/cmake
     GIT_SHALLOW     ON
 )
-# This caches pthreads4w_SOURCE_DIR, pthreads4w_BINARY_DIR and pthreads4w_POPULATED.
-FetchContent_MakeAvailable(pthreads4w)
+# Check if population has already been performed
+FetchContent_GetProperties(pthreads4w)
+if(NOT pthreads4w_POPULATED)
+    # Fetch the content using previously declared details.
+    # This caches pthreads4w_SOURCE_DIR, pthreads4w_BINARY_DIR and pthreads4w_POPULATED.
+    FetchContent_Populate(pthreads4w)
 
-# Output with cmake option --log-level=DEBUG
-message(DEBUG "  DEBUG: pthreads4w_SOURCE_DIR is: ${pthreads4w_SOURCE_DIR}")
-message(DEBUG "  DEBUG: pthreads4w_BINARY_DIR is: ${pthreads4w_BINARY_DIR}")
+    # Output with cmake option --log-level=DEBUG
+    message(DEBUG "  DEBUG: pthreads4w_SOURCE_DIR is: ${pthreads4w_SOURCE_DIR}")
+    message(DEBUG "  DEBUG: pthreads4w_BINARY_DIR is: ${pthreads4w_BINARY_DIR}")
 
-message(CHECK_PASS "done")
+    execute_process(COMMAND cmake -S ${pthreads4w_SOURCE_DIR} -B ${pthreads4w_BINARY_DIR} -G "NMake Makefiles" -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -D BUILD_TESTING=${BUILD_TESTING} #-D CMAKE_COLOR_MAKEFILE=OFF
+                    WORKING_DIRECTORY ${pthreads4w_SOURCE_DIR}
+                    RESULT_VARIABLE UPNP_RETURN_CODE
+                    ERROR_VARIABLE UPNP_ERROR_MESSAGE
+                    COMMAND_ECHO STDOUT)
+    if(NOT ${UPNP_RETURN_CODE} EQUAL 0)
+        # This will stop the installation
+        message(FATAL_ERROR "${UPNP_RETURN_CODE}: ${UPNP_ERROR_MESSAGE}")
+    endif()
+
+    message(CHECK_PASS "done")
+    message(CHECK_START "Building POSIX Threads for Windows libraries")
+
+    execute_process(COMMAND cmake --build ${pthreads4w_BINARY_DIR} --config ${CMAKE_BUILD_TYPE} #--target install
+                    WORKING_DIRECTORY ${pthreads4w_SOURCE_DIR}
+                    RESULT_VARIABLE UPNP_RETURN_CODE
+                    ERROR_VARIABLE UPNP_ERROR_MESSAGE
+                    OUTPUT_QUIET)
+    if(NOT ${UPNP_RETURN_CODE} EQUAL 0)
+        # This will stop the installation
+        message(FATAL_ERROR "${UPNP_RETURN_CODE}: ${UPNP_ERROR_MESSAGE}")
+    endif()
+
+    # Provide pthread library without version extention.
+    # Provide static library
+    # Be sure to append content of ${pthreads4w_BINARY_DIR} to environment
+    # variable LIB (to find *.lib).
+    file(CREATE_LINK ${pthreads4w_BINARY_DIR}/libpthreadVC3.lib
+                     ${pthreads4w_BINARY_DIR}/pthread.lib
+                     COPY_ON_ERROR SYMBOLIC)
+    # Provide shared library
+    # Be sure to append content of ${pthreads4w_BINARY_DIR} to environment
+    # variable LIB (to find *.lib) and to Path (to find *.dll).
+    #file(CREATE_LINK ${pthreads4w_BINARY_DIR}/pthreadVC3.dll
+    #                 ${pthreads4w_BINARY_DIR}/pthread.dll
+    #                 COPY_ON_ERROR SYMBOLIC)
+    #file(CREATE_LINK ${pthreads4w_BINARY_DIR}/pthreadVC3.lib
+    #                 ${pthreads4w_BINARY_DIR}/pthread.lib
+    #                 COPY_ON_ERROR SYMBOLIC)
+
+    message(CHECK_PASS "done")
+
+endif(NOT pthreads4w_POPULATED)
 
 
 #################################
@@ -73,7 +119,7 @@ message(CHECK_PASS "done")
 # the subproject. Build of the dependent project will fail because the libraries
 # are not available yet. We have to use also a subproject for the dependent
 # project so we can control the order of the builds.
-#
+
 add_subdirectory(${PROJECT_SOURCE_DIR}/gtests/googletest ${PROJECT_SOURCE_DIR}/gtests/googletest/build)
 
 

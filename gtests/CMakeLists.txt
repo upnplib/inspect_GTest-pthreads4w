@@ -1,11 +1,11 @@
 # Copyright (C) 2021 GPL 3 and higher by Ingo Höft,  <Ingo@Hoeft-online.de>
-# Redistribution only with this Copyright remark. Last modified: 2021-09-18
+# Redistribution only with this Copyright remark. Last modified: 2021-09-20
 
 cmake_minimum_required(VERSION 3.18)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(INSPECT_GTESTS VERSION 0002)
+project(INSPECT_GTESTS VERSION 0003)
 
 
 message(CHECK_START "Configuring Unit Tests")
@@ -34,15 +34,21 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     set(targ_suffix "d")
 endif()
 
-target_link_libraries(test_template
-               ${CMAKE_BINARY_DIR}/lib/gtest${targ_suffix}.lib
-               ${CMAKE_BINARY_DIR}/lib/gmock${targ_suffix}.lib
-               #${CMAKE_BINARY_DIR}/lib/gtest_main${targ_suffix}.lib
-               #${CMAKE_BINARY_DIR}/lib/gmock_main${targ_suffix}.lib
-               #-pthread
-               #${pthreads4w_BINARY_DIR}/libpthreadVC3.lib
-               #${pthreads4w_BINARY_DIR}/pthread.lib
-)
+if(${CMAKE_GENERATOR} MATCHES "Visual Studio")
+    target_link_libraries(test_template
+                   ${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}/gtest${targ_suffix}.lib
+                   ${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}/gmock${targ_suffix}.lib
+                   ${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}/gtest_main${targ_suffix}.lib
+                   ${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}/gmock_main${targ_suffix}.lib
+                   ${pthreads4w_BINARY_DIR}/pthread.lib)
+else()
+    target_link_libraries(test_template
+                   ${CMAKE_BINARY_DIR}/lib/gtest${targ_suffix}.lib
+                   ${CMAKE_BINARY_DIR}/lib/gmock${targ_suffix}.lib
+                   ${CMAKE_BINARY_DIR}/lib/gtest_main${targ_suffix}.lib
+                   ${CMAKE_BINARY_DIR}/lib/gmock_main${targ_suffix}.lib
+                   ${pthreads4w_BINARY_DIR}/pthread.lib)
+endif()
 
 add_executable(simple_pthread ${PROJECT_SOURCE_DIR}/simple_pthread.cpp)
 
