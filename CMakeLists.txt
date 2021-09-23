@@ -9,12 +9,17 @@ cmake_minimum_required(VERSION 3.18)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(GTEST_WITH_PT4W VERSION 0004)
+project(GTEST_WITH_PT4W VERSION 0005)
 
 
 #################################
 # General checks and settings   #
 #################################
+
+if(NOT WIN32)
+    # This will stop the installation
+    message(FATAL_ERROR "This is for inspecting POSIX Threads for Windows.\nIt can only be done on Microsoft Windows.")
+endif()
 
 option(PT4W_BUILD_TESTING "Build the time and space consuming test suite of pthreads4w" OFF)
 
@@ -33,6 +38,7 @@ find_package(Git)
 
 # pthreads4w is essential to run UPnPlib on MS Windows.
 if(NOT Git_FOUND)
+    # This will stop the installation
     message(FATAL_ERROR "A git client isn't available. We need it to download POSIX Threads for Windows.")
 else()
     # This we need to FetchContent from github.com
