@@ -1,9 +1,10 @@
 // Copyright (C) 2021 GPL 3 and higher by Ingo Höft,  <Ingo@Hoeft-online.de>
-// Redistribution only with this Copyright remark. Last modified: 2021-09-18
+// Redistribution only with this Copyright remark. Last modified: 2021-09-23
 
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-#include "pthread.h"
+
+#include <pthread.h>
 
 #ifdef GTEST_IS_THREADSAFE
 #  pragma message ( "pthread is available" )
@@ -32,8 +33,10 @@ TEST(simpleTestSuite, simpleMockTest) {
     EXPECT_EQ(mockedFoo.GetSize(), 0);
 }
 
-/*
-void* pthread_start_routine(void*) {}
+
+void* pthread_start_routine(void*) {
+    return nullptr;
+}
 
 TEST(simpleTestSuite, simplePthreadsTest) {
     pthread_t thread;
@@ -41,9 +44,9 @@ TEST(simpleTestSuite, simplePthreadsTest) {
 
     EXPECT_EQ(pthread_create(&thread, NULL, &pthread_start_routine, NULL), 0);
     EXPECT_EQ(pthread_join(thread, &retval), 0);
-    EXPECT_EQ(retval, NULL);
+    EXPECT_EQ(retval, (void*)NULL);
 }
-*/
+
 
 // main entry
 // ----------
