@@ -1,5 +1,5 @@
 # Copyright (C) 2021 GPL 3 and higher by Ingo Höft,  <Ingo@Hoeft-online.de>
-# Redistribution only with this Copyright remark. Last modified: 2021-09-23
+# Redistribution only with this Copyright remark. Last modified: 2021-09-24
 
 # Test builds with:
 # cmake -S . -B build -D gtest_disable_pthreads=ON [-G "NMake Makefiles"] [-D BUILD_SHARED_LIBS=ON] -D CMAKE_BUILD_TYPE=[MinSizeRel|Debug] [--log-level=DEBUG]
@@ -167,37 +167,29 @@ message(CHECK_START "configuring Unit Tests")
 add_subdirectory(${PROJECT_SOURCE_DIR}/gtests ${PROJECT_SOURCE_DIR}/gtests/build)
 
 # Create symlinks for shared gtest .dlls so the Unit Tests can find them.
-if(WIN32 AND BUILD_SHARED_LIBS)
+if(BUILD_SHARED_LIBS)
     if(${CMAKE_GENERATOR} MATCHES "Visual Studio")
         # Make Directory is necessary because sub directory ${CMAKE_BUILD_TYPE} isn't available yet.
         file(MAKE_DIRECTORY ${INSPECT_GTESTS_BINARY_DIR}/${CMAKE_BUILD_TYPE})
         file(CREATE_LINK ${PROJECT_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/gtest${UPNP_DEBUG_SUFFIX}.dll
-                         ${INSPECT_GTESTS_BINARY_DIR}/${CMAKE_BUILD_TYPE}/gtest${UPNP_DEBUG_SUFFIX}.dll
-                         SYMBOLIC)
+                         ${INSPECT_GTESTS_BINARY_DIR}/${CMAKE_BUILD_TYPE}/gtest${UPNP_DEBUG_SUFFIX}.dll SYMBOLIC)
         file(CREATE_LINK ${PROJECT_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/gmock${UPNP_DEBUG_SUFFIX}.dll
-                         ${INSPECT_GTESTS_BINARY_DIR}/${CMAKE_BUILD_TYPE}/gmock${UPNP_DEBUG_SUFFIX}.dll
-                         SYMBOLIC)
+                         ${INSPECT_GTESTS_BINARY_DIR}/${CMAKE_BUILD_TYPE}/gmock${UPNP_DEBUG_SUFFIX}.dll SYMBOLIC)
         file(CREATE_LINK ${PROJECT_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/gtest_main${UPNP_DEBUG_SUFFIX}.dll
-                         ${INSPECT_GTESTS_BINARY_DIR}/${CMAKE_BUILD_TYPE}/gtest_main${UPNP_DEBUG_SUFFIX}.dll
-                         SYMBOLIC)
+                         ${INSPECT_GTESTS_BINARY_DIR}/${CMAKE_BUILD_TYPE}/gtest_main${UPNP_DEBUG_SUFFIX}.dll SYMBOLIC)
         file(CREATE_LINK ${PROJECT_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/gmock_main${UPNP_DEBUG_SUFFIX}.dll
-                         ${INSPECT_GTESTS_BINARY_DIR}/${CMAKE_BUILD_TYPE}/gmock_main${UPNP_DEBUG_SUFFIX}.dll
-                         SYMBOLIC)
+                         ${INSPECT_GTESTS_BINARY_DIR}/${CMAKE_BUILD_TYPE}/gmock_main${UPNP_DEBUG_SUFFIX}.dll SYMBOLIC)
     else()
         file(CREATE_LINK ${PROJECT_BINARY_DIR}/bin/gtest${UPNP_DEBUG_SUFFIX}.dll
-                         ${INSPECT_GTESTS_BINARY_DIR}/gtest${UPNP_DEBUG_SUFFIX}.dll
-                         SYMBOLIC)
+                         ${INSPECT_GTESTS_BINARY_DIR}/gtest${UPNP_DEBUG_SUFFIX}.dll SYMBOLIC)
         file(CREATE_LINK ${PROJECT_BINARY_DIR}/bin/gmock${UPNP_DEBUG_SUFFIX}.dll
-                         ${INSPECT_GTESTS_BINARY_DIR}/gmock${UPNP_DEBUG_SUFFIX}.dll
-                         SYMBOLIC)
+                         ${INSPECT_GTESTS_BINARY_DIR}/gmock${UPNP_DEBUG_SUFFIX}.dll SYMBOLIC)
         file(CREATE_LINK ${PROJECT_BINARY_DIR}/bin/gtest_main${UPNP_DEBUG_SUFFIX}.dll
-                         ${INSPECT_GTESTS_BINARY_DIR}/gtest_main${UPNP_DEBUG_SUFFIX}.dll
-                         SYMBOLIC)
+                         ${INSPECT_GTESTS_BINARY_DIR}/gtest_main${UPNP_DEBUG_SUFFIX}.dll SYMBOLIC)
         file(CREATE_LINK ${PROJECT_BINARY_DIR}/bin/gmock_main${UPNP_DEBUG_SUFFIX}.dll
-                         ${INSPECT_GTESTS_BINARY_DIR}/gmock_main${UPNP_DEBUG_SUFFIX}.dll
-                         SYMBOLIC)
+                         ${INSPECT_GTESTS_BINARY_DIR}/gmock_main${UPNP_DEBUG_SUFFIX}.dll SYMBOLIC)
     endif()
 
-endif(WIN32 AND BUILD_SHARED_LIBS)
+endif(BUILD_SHARED_LIBS)
 
 message(CHECK_PASS "done")

@@ -1,0 +1,46 @@
+name: Inspect gtest with pthreads4w
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Job: Run tests
+  #---------------
+  gtest-pthreads4w:
+    name: Run tests
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        #os: [ windows-2016, windows-latest ]
+        os: [ windows-latest ]
+        generator: [ '', '-G "NMake Makefiles"' ]
+        build: [ '', '-D BUILD_SHARED_LIBS=ON' ]
+        buildtype: [ 'MinSizeRel', 'Debug' ]
+      fail-fast: false
+
+    steps:
+    # Step building the pthreads4w library
+      - uses: actions/checkout@v2
+
+      - name: Use MS Windows 64 bit
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: amd64
+
+      - name: Configure
+        run: cmake -S . -B build -D gtest_disable_pthreads=ON ${{matrix.generator}} ${{matrix.build}} -D CMAKE_BUILD_TYPE=${{matrix.buildtype}}
+
+      - name: Build
+        run: cmake --build build --config ${{matrix.buildtype}}
+
+      - if: matrix.generator == ''
+        name: Run test program build with Visual Studio
+        run: ./gtests/build/${{matrix.buildtype}}/test_simple.exe
+
+      - if: matrix.generator != ''
+        name: Run test program build with NMake
+        run: ./gtests/build/test_simple.exe
